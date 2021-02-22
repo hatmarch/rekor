@@ -1,0 +1,190 @@
+﻿kind: Deployment
+apiVersion: apps/v1
+metadata:
+  annotations:
+    alpha.image.policy.openshift.io/resolve-names: '*'
+    deployment.kubernetes.io/revision: '4'
+    image.openshift.io/triggers: >-
+      [{"from":{"kind":"ImageStreamTag","name":"trillian-log:latest","namespace":"rekor-operator-system"},"fieldPath":"spec.template.spec.containers[?(@.name==\"trillian-log\")].image","pause":"false"}]
+    openshift.io/generated-by: OpenShiftWebConsole
+  selfLink: /apis/apps/v1/namespaces/rekor-operator-system/deployments/trillian-log
+  resourceVersion: '529043'
+  name: trillian-log
+  uid: 2972316d-a13b-4ff4-8817-acabfaa5fed5
+  creationTimestamp: '2021-02-22T12:58:36Z'
+  generation: 8
+  managedFields:
+    - manager: Mozilla
+      operation: Update
+      apiVersion: apps/v1
+      time: '2021-02-22T13:09:33Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:alpha.image.policy.openshift.io/resolve-names': {}
+            'f:image.openshift.io/triggers': {}
+            'f:openshift.io/generated-by': {}
+          'f:labels':
+            .: {}
+            'f:app': {}
+            'f:app.kubernetes.io/component': {}
+            'f:app.kubernetes.io/instance': {}
+            'f:app.openshift.io/runtime': {}
+            'f:app.openshift.io/runtime-namespace': {}
+        'f:spec':
+          'f:progressDeadlineSeconds': {}
+          'f:replicas': {}
+          'f:revisionHistoryLimit': {}
+          'f:selector':
+            'f:matchLabels':
+              .: {}
+              'f:app': {}
+          'f:strategy':
+            'f:rollingUpdate':
+              .: {}
+              'f:maxSurge': {}
+              'f:maxUnavailable': {}
+            'f:type': {}
+          'f:template':
+            'f:metadata':
+              'f:annotations':
+                .: {}
+                'f:openshift.io/generated-by': {}
+              'f:labels':
+                .: {}
+                'f:app': {}
+                'f:deploymentconfig': {}
+            'f:spec':
+              'f:containers':
+                'k:{"name":"trillian-log"}':
+                  'f:image': {}
+                  'f:terminationMessagePolicy': {}
+                  .: {}
+                  'f:resources':
+                    .: {}
+                    'f:requests':
+                      .: {}
+                      'f:cpu': {}
+                      'f:memory': {}
+                  'f:args': {}
+                  'f:terminationMessagePath': {}
+                  'f:imagePullPolicy': {}
+                  'f:ports':
+                    .: {}
+                    'k:{"containerPort":8080,"protocol":"TCP"}':
+                      .: {}
+                      'f:containerPort': {}
+                      'f:protocol': {}
+                  'f:name': {}
+              'f:dnsPolicy': {}
+              'f:restartPolicy': {}
+              'f:schedulerName': {}
+              'f:securityContext': {}
+              'f:terminationGracePeriodSeconds': {}
+    - manager: kube-controller-manager
+      operation: Update
+      apiVersion: apps/v1
+      time: '2021-02-22T13:09:37Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            'f:deployment.kubernetes.io/revision': {}
+        'f:status':
+          'f:availableReplicas': {}
+          'f:conditions':
+            .: {}
+            'k:{"type":"Available"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+            'k:{"type":"Progressing"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+          'f:observedGeneration': {}
+          'f:readyReplicas': {}
+          'f:replicas': {}
+          'f:updatedReplicas': {}
+  namespace: rekor-operator-system
+  labels:
+    app: trillian-log
+    app.kubernetes.io/component: trillian-log
+    app.kubernetes.io/instance: trillian-log
+    app.openshift.io/runtime: elastic
+    app.openshift.io/runtime-namespace: rekor-operator-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trillian-log
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: trillian-log
+        deploymentconfig: trillian-log
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+    spec:
+      containers:
+        - name: trillian-log
+          image: >-
+            gcr.io/trillian-opensource-ci/log_server@sha256:6edd7dc1873c1444aa2d9be91fc989f1a8bb1cabef9776922ac715e144ff247a
+          args:
+            - '--storage_system=mysql'
+            - '--mysql_uri=test:zaphod@tcp(trillian-db:3306)/test'
+            - '--rpc_endpoint=0.0.0.0:8091'
+            - '--http_endpoint=0.0.0.0:8090'
+            - '--alsologtostderr'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1G
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+status:
+  observedGeneration: 8
+  replicas: 1
+  updatedReplicas: 1
+  readyReplicas: 1
+  availableReplicas: 1
+  conditions:
+    - type: Progressing
+      status: 'True'
+      lastUpdateTime: '2021-02-22T13:09:27Z'
+      lastTransitionTime: '2021-02-22T12:58:36Z'
+      reason: NewReplicaSetAvailable
+      message: ReplicaSet "trillian-log-6cf8bff8b4" has successfully progressed.
+    - type: Available
+      status: 'True'
+      lastUpdateTime: '2021-02-22T13:09:37Z'
+      lastTransitionTime: '2021-02-22T13:09:37Z'
+      reason: MinimumReplicasAvailable
+      message: Deployment has minimum availability.

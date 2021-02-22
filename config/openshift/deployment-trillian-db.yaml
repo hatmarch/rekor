@@ -1,0 +1,220 @@
+﻿kind: Deployment
+apiVersion: apps/v1
+metadata:
+  annotations:
+    alpha.image.policy.openshift.io/resolve-names: '*'
+    deployment.kubernetes.io/revision: '2'
+    image.openshift.io/triggers: >-
+      [{"from":{"kind":"ImageStreamTag","name":"trillian-db:3c8193ebb2d7fedb44d18e9c810d0d2e4dbb7e4d","namespace":"rekor-operator-system"},"fieldPath":"spec.template.spec.containers[?(@.name==\"trillian-db\")].image","pause":"false"}]
+    openshift.io/generated-by: OpenShiftWebConsole
+  selfLink: /apis/apps/v1/namespaces/rekor-operator-system/deployments/trillian-db
+  resourceVersion: '521554'
+  name: trillian-db
+  uid: d97e0baf-e8af-4409-bfb6-aca2014168e0
+  creationTimestamp: '2021-02-22T12:53:41Z'
+  generation: 2
+  managedFields:
+    - manager: Mozilla
+      operation: Update
+      apiVersion: apps/v1
+      time: '2021-02-22T12:54:56Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:alpha.image.policy.openshift.io/resolve-names': {}
+            'f:image.openshift.io/triggers': {}
+            'f:openshift.io/generated-by': {}
+          'f:labels':
+            .: {}
+            'f:app': {}
+            'f:app.kubernetes.io/component': {}
+            'f:app.kubernetes.io/instance': {}
+            'f:app.openshift.io/runtime': {}
+            'f:app.openshift.io/runtime-namespace': {}
+        'f:spec':
+          'f:progressDeadlineSeconds': {}
+          'f:replicas': {}
+          'f:revisionHistoryLimit': {}
+          'f:selector':
+            'f:matchLabels':
+              .: {}
+              'f:app': {}
+          'f:strategy':
+            'f:rollingUpdate':
+              .: {}
+              'f:maxSurge': {}
+              'f:maxUnavailable': {}
+            'f:type': {}
+          'f:template':
+            'f:metadata':
+              'f:annotations':
+                .: {}
+                'f:openshift.io/generated-by': {}
+              'f:labels':
+                .: {}
+                'f:app': {}
+                'f:deploymentconfig': {}
+            'f:spec':
+              'f:containers':
+                'k:{"name":"trillian-db"}':
+                  'f:image': {}
+                  'f:volumeMounts':
+                    .: {}
+                    'k:{"mountPath":"/var/lib/mysql"}':
+                      .: {}
+                      'f:mountPath': {}
+                      'f:name': {}
+                  'f:terminationMessagePolicy': {}
+                  .: {}
+                  'f:resources': {}
+                  'f:env':
+                    .: {}
+                    'k:{"name":"MYSQL_DATABASE"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"MYSQL_PASSWORD"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"MYSQL_ROOT_PASSWORD"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"MYSQL_USER"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                  'f:terminationMessagePath': {}
+                  'f:imagePullPolicy': {}
+                  'f:ports':
+                    .: {}
+                    'k:{"containerPort":3306,"protocol":"TCP"}':
+                      .: {}
+                      'f:containerPort': {}
+                      'f:protocol': {}
+                  'f:name': {}
+              'f:dnsPolicy': {}
+              'f:restartPolicy': {}
+              'f:schedulerName': {}
+              'f:securityContext': {}
+              'f:terminationGracePeriodSeconds': {}
+              'f:volumes':
+                .: {}
+                'k:{"name":"trillian-db-1"}':
+                  .: {}
+                  'f:emptyDir': {}
+                  'f:name': {}
+    - manager: kube-controller-manager
+      operation: Update
+      apiVersion: apps/v1
+      time: '2021-02-22T12:55:00Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            'f:deployment.kubernetes.io/revision': {}
+        'f:status':
+          'f:availableReplicas': {}
+          'f:conditions':
+            .: {}
+            'k:{"type":"Available"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+            'k:{"type":"Progressing"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+          'f:observedGeneration': {}
+          'f:readyReplicas': {}
+          'f:replicas': {}
+          'f:updatedReplicas': {}
+  namespace: rekor-operator-system
+  labels:
+    app: trillian-db
+    app.kubernetes.io/component: trillian-db
+    app.kubernetes.io/instance: trillian-db
+    app.openshift.io/runtime: mysql-database
+    app.openshift.io/runtime-namespace: rekor-operator-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trillian-db
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: trillian-db
+        deploymentconfig: trillian-db
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+    spec:
+      volumes:
+        - name: trillian-db-1
+          emptyDir: {}
+      containers:
+        - resources: {}
+          terminationMessagePath: /dev/termination-log
+          name: trillian-db
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: zaphod
+            - name: MYSQL_DATABASE
+              value: test
+            - name: MYSQL_USER
+              value: test
+            - name: MYSQL_PASSWORD
+              value: zaphod
+          ports:
+            - containerPort: 3306
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: trillian-db-1
+              mountPath: /var/lib/mysql
+          terminationMessagePolicy: File
+          image: >-
+            gcr.io/trillian-opensource-ci/db_server@sha256:5b0e08670aadb9ec4d81ded9392889359c14fca8991c55fbca90fa5742128e01
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+status:
+  observedGeneration: 2
+  replicas: 1
+  updatedReplicas: 1
+  readyReplicas: 1
+  availableReplicas: 1
+  conditions:
+    - type: Available
+      status: 'True'
+      lastUpdateTime: '2021-02-22T12:54:02Z'
+      lastTransitionTime: '2021-02-22T12:54:02Z'
+      reason: MinimumReplicasAvailable
+      message: Deployment has minimum availability.
+    - type: Progressing
+      status: 'True'
+      lastUpdateTime: '2021-02-22T12:55:00Z'
+      lastTransitionTime: '2021-02-22T12:53:41Z'
+      reason: NewReplicaSetAvailable
+      message: ReplicaSet "trillian-db-69fd765f96" has successfully progressed.

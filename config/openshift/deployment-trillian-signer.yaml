@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trillian-signer
+  labels:
+    app: trillian-signer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trillian-signer
+  template:
+    metadata:
+      labels:
+        app: trillian-signer
+    spec:
+      containers:
+      - name: log-signer
+        image: gcr.io/trillian-opensource-ci/log_signer
+        args: [
+          "--storage_system=mysql",
+          # TODO: move these to a secret/configmap
+          "--mysql_uri=test:zaphod@tcp(trillian-db:3306)/test",
+          "--rpc_endpoint=0.0.0.0:8090",
+          "--http_endpoint=0.0.0.0:8091",
+          # TODO: use etcd and run multiple signers
+          "--force_master",
+          "--alsologtostderr",
+        ]
+        resources:
+          requests:
+            memory: "1G"
+            cpu: ".5"
