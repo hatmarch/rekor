@@ -1,0 +1,44 @@
+{
+	"name": "Rekor Operator",
+	"dockerFile": "Dockerfile",
+	"runArgs": [ 
+		"--cap-add=SYS_PTRACE", 
+		"--security-opt", 
+		"seccomp=unconfined",
+		"-v", "/var/run/docker.sock.raw:/var/run/docker.sock",
+		// share docker registry credentials
+		// FIXME: This does not appear to work with all DockerDesktop for Mac configurations
+		//"-v", "${env:HOME}/.docker:/home/jboss/.docker",
+		"-v", "${env:HOME}/.aws:/home/jboss/.aws",
+		"-v", "${env:HOME}/.kube:/home/jboss/.kube",
+		"-v", "${env:HOME}/.vs-kubernetes:/home/jboss/.vs-kubernetes",
+		"-v", "${env:HOME}/.oh-my-zsh:/home/jboss/.oh-my-zsh",
+	//	"-v", "${env:HOME}/.docker:/home/jboss/.docker:rw,mode=774",
+
+	],
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [9000],
+
+	// Use 'settings' to set *default* container specific settings.json values on container create. 
+	// You can edit these settings after create using File > Preferences > Settings > Remote.
+	"settings": { 
+		"terminal.integrated.shell.linux": "/bin/zsh",
+		//"go.gopath": "/usr/local/go/bin",
+		"go.goroot": "/usr/local/go",
+		"go.inferGopath": true,
+		"go.useLanguageServer": true
+	},
+
+	// Add the IDs of extensions you want installed when the container is created in the array below.
+	"extensions": [
+		"golang.Go",
+		"joaompinto.asciidoctor-vscode",
+	],
+	
+	// Uncomment the next line to run commands after the container is created.
+	// "postCreateCommand": "go version",
+
+	// Comment out the next line to run as root
+	"remoteUser": "jboss"
+}
