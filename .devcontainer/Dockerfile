@@ -13,4 +13,10 @@ RUN chgrp -R root /home/jboss
 
 # ENV IMG=quay.io/mhildenb/rekor-operator:0.1
 
+# install a suitably old version yq (version 4.x and above won't work)
+# See info here: https://mikefarah.gitbook.io/yq/upgrading-from-v3
+# if you want to upgrade to the new 4.x syntax
+RUN wget https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_386 -O /usr/bin/yq &&\
+    chmod +x /usr/bin/yq
+
 USER jboss
