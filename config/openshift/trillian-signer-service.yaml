@@ -1,0 +1,30 @@
+apiVersion: v1
+items:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+      labels:
+        app: trillian-signer
+        app.kubernetes.io/component: trillian-signer
+        app.kubernetes.io/instance: trillian-signer
+        app.openshift.io/runtime-version: latest
+      name: trillian-signer
+    spec:
+      ports:
+        - name: 8091-tcp
+          port: 8091
+          protocol: TCP
+          targetPort: 8091
+      selector:
+        app: trillian-signer
+        deploymentconfig: trillian-signer
+      sessionAffinity: None
+      type: ClusterIP
+    status:
+      loadBalancer: {}
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
