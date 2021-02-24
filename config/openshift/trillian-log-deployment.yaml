@@ -41,7 +41,7 @@ items:
                 - --rpc_endpoint=0.0.0.0:8091
                 - --http_endpoint=0.0.0.0:8090
                 - --alsologtostderr
-            - image: gcr.io/trillian-opensource-ci/log_server@sha256:6edd7dc1873c1444aa2d9be91fc989f1a8bb1cabef9776922ac715e144ff247a
+              image: gcr.io/trillian-opensource-ci/log_server@sha256:6edd7dc1873c1444aa2d9be91fc989f1a8bb1cabef9776922ac715e144ff247a
               imagePullPolicy: Always
               name: trillian-log
               ports:

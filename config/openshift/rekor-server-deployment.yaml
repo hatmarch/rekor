@@ -44,7 +44,7 @@ items:
                 - --redis_server.address=redis
                 - --redis_server.port=6379
                 - --log_type=prod
-            - image: quay.io/mhildenb/rekor-server@sha256:209e3aa16873c6d69a030bc760c6162361d651ec8b4320859b98672ec1f4275c
+              image: quay.io/mhildenb/rekor-server@sha256:209e3aa16873c6d69a030bc760c6162361d651ec8b4320859b98672ec1f4275c
               imagePullPolicy: IfNotPresent
               name: rekor-server
               ports:

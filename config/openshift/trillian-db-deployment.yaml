@@ -44,7 +44,7 @@ items:
                   value: test
                 - name: MYSQL_PASSWORD
                   value: zaphod
-            - image: gcr.io/trillian-opensource-ci/db_server@sha256:5b0e08670aadb9ec4d81ded9392889359c14fca8991c55fbca90fa5742128e01
+              image: gcr.io/trillian-opensource-ci/db_server@sha256:5b0e08670aadb9ec4d81ded9392889359c14fca8991c55fbca90fa5742128e01
               imagePullPolicy: IfNotPresent
               name: trillian-db
               ports:
