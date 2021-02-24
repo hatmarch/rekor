@@ -24,3 +24,4 @@ RUN wget https://github.com/go-swagger/go-swagger/releases/download/v0.26.1/swag
 USER jboss
 
 COPY .zshrc.example $HOME/.zshrc
+ENV DEMO_HOME /workspaces/rekor
