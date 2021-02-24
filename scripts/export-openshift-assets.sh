@@ -114,19 +114,20 @@ do
 
     if [ -s ${DEPLOYMENT_YAML} ]
     then
-        yq delete --inplace  ${DEPLOYMENT_YAML} items[*].metadata.namespace
-        yq delete --inplace  ${DEPLOYMENT_YAML} items[*].metadata.uid
-        yq delete --inplace  ${DEPLOYMENT_YAML} items[*].metadata.selfLink
-        yq delete --inplace  ${DEPLOYMENT_YAML} items[*].metadata.creationTimestamp
-        yq delete --inplace  ${DEPLOYMENT_YAML} items[*].metadata.resourceVersion
-        yq delete --inplace  ${DEPLOYMENT_YAML} items[*].metadata.generation
-        yq delete --inplace  ${DEPLOYMENT_YAML} items[*].metadata.managedFields
-        yq delete --inplace  ${DEPLOYMENT_YAML} items[*].metadata.annotations.[deployment.kubernetes.io/revision]
-        yq delete --inplace  ${DEPLOYMENT_YAML} items[*].metadata.annotations.[image.openshift.io/triggers]
-        yq delete --inplace  ${DEPLOYMENT_YAML} items[*].status
+        yq delete --inplace  ${DEPLOYMENT_YAML} 'items[*].metadata.namespace'
+        yq delete --inplace  ${DEPLOYMENT_YAML} 'items[*].metadata.namespace'
+        yq delete --inplace  ${DEPLOYMENT_YAML} 'items[*].metadata.uid'
+        yq delete --inplace  ${DEPLOYMENT_YAML} 'items[*].metadata.selfLink'
+        yq delete --inplace  ${DEPLOYMENT_YAML} 'items[*].metadata.creationTimestamp'
+        yq delete --inplace  ${DEPLOYMENT_YAML} 'items[*].metadata.resourceVersion'
+        yq delete --inplace  ${DEPLOYMENT_YAML} 'items[*].metadata.generation'
+        yq delete --inplace  ${DEPLOYMENT_YAML} 'items[*].metadata.managedFields'
+        yq delete --inplace  ${DEPLOYMENT_YAML} 'items[*].metadata.annotations.[deployment.kubernetes.io/revision]'
+        yq delete --inplace  ${DEPLOYMENT_YAML} 'items[*].metadata.annotations.[image.openshift.io/triggers]'
+        yq delete --inplace  ${DEPLOYMENT_YAML} 'items[*].status'
 
         sed -i "s/  envFrom:/- envFrom:/g"  ${DEPLOYMENT_YAML}
-        grep '\- envFrom:' ${DEPLOYMENT_YAML} &> /dev/null || sed -i "s/  image:/- image:/g"  ${DEPLOYMENT_YAML}
+        # grep '\- envFrom:' ${DEPLOYMENT_YAML} &> /dev/null || sed -i "s/  image:/- image:/g"  ${DEPLOYMENT_YAML}
         sed -i "/^.*: \[\]$/d"  ${DEPLOYMENT_YAML}
         # sed -i "s/8080-tcp/http/g" ${DEPLOYMENT_YAML}
         # Don't use local image registry
