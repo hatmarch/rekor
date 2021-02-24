@@ -10,6 +10,14 @@ Once up and running, you can reach the `rekor-server` at:
 curl http://$(oc get route rekor-server -o jsonpath='{.spec.host}')/api/v1/log/ 
 ```
 
+## Build Cli
+
+From the root of the git repo, run the following command
+
+```
+make cli
+```
+
 ## Run in DevContainer
 
 ### Debugging in VSCode

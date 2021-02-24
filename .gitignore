@@ -6,3 +6,4 @@ rekor-cli
 rekor-server
 /server
 swagger
+pkg/generated/

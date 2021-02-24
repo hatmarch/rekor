@@ -18,5 +18,7 @@ RUN chgrp -R root /home/jboss
 # if you want to upgrade to the new 4.x syntax
 RUN wget https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_386 -O /usr/bin/yq &&\
     chmod +x /usr/bin/yq
+RUN wget https://github.com/go-swagger/go-swagger/releases/download/v0.26.1/swagger_linux_386 -O /usr/bin/swagger &&\
+    chmod +x /usr/bin/swagger
 
 USER jboss
