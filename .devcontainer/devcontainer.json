@@ -13,6 +13,10 @@
 		"-v", "${env:HOME}/.kube:/home/jboss/.kube",
 		"-v", "${env:HOME}/.vs-kubernetes:/home/jboss/.vs-kubernetes",
 		"-v", "${env:HOME}/.oh-my-zsh:/home/jboss/.oh-my-zsh",
+		"-v", "${env:HOME}/.gnupg:/home/jboss/.gnupg",
+		"-e", "AWS_PROFILE=redhat",
+		"-e", "REGION=ap-southeast-2"
+
 	//	"-v", "${env:HOME}/.docker:/home/jboss/.docker:rw,mode=774",
 
 	],

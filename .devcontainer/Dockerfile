@@ -21,6 +21,12 @@ RUN wget https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_386 -O
 RUN wget https://github.com/go-swagger/go-swagger/releases/download/v0.26.1/swagger_linux_386 -O /usr/bin/swagger &&\
     chmod +x /usr/bin/swagger
 
+# NOTE: You might need to use subscription manager first for this to work
+RUN yum install -y pinentry
+
+RUN curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && ./aws/install && rm awscliv2.zip && rm -rf ./aws
+
 USER jboss
 
 COPY .zshrc.example $HOME/.zshrc
