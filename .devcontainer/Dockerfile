@@ -22,3 +22,5 @@ RUN wget https://github.com/go-swagger/go-swagger/releases/download/v0.26.1/swag
     chmod +x /usr/bin/swagger
 
 USER jboss
+
+COPY .zshrc.example $HOME/.zshrc
