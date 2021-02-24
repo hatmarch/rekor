@@ -48,7 +48,7 @@ items:
               imagePullPolicy: IfNotPresent
               name: rekor-server
               ports:
-                - containerPort: 8080
+                - containerPort: 3000
                   protocol: TCP
               resources:
                 requests:

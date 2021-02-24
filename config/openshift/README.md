@@ -4,6 +4,12 @@
 
 Apply all .yaml files in the [openshift](/workspaces/rekor/config/openshift) directory
 
+Once up and running, you can reach the `rekor-server` at:
+
+```
+curl http://$(oc get route rekor-server -o jsonpath='{.spec.host}')/api/v1/log/ 
+```
+
 ## Run in DevContainer
 
 ### Debugging in VSCode

@@ -13,7 +13,7 @@ items:
       name: rekor-server
     spec:
       port:
-        targetPort: 8080-tcp
+        targetPort: 3000-tcp
       to:
         kind: Service
         name: rekor-server
