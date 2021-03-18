@@ -30,10 +30,10 @@ import (
 
 	"github.com/go-openapi/strfmt"
 
-	"github.com/projectrekor/rekor/cmd/cli/app/format"
-	"github.com/projectrekor/rekor/pkg/generated/client/index"
-	"github.com/projectrekor/rekor/pkg/generated/models"
-	"github.com/projectrekor/rekor/pkg/log"
+	"github.com/sigstore/rekor/cmd/cli/app/format"
+	"github.com/sigstore/rekor/pkg/generated/client/index"
+	"github.com/sigstore/rekor/pkg/generated/models"
+	"github.com/sigstore/rekor/pkg/log"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

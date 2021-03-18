@@ -29,22 +29,22 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/projectrekor/rekor/pkg/log"
-	"github.com/projectrekor/rekor/pkg/pki/pgp"
-	"github.com/projectrekor/rekor/pkg/types"
-	"github.com/projectrekor/rekor/pkg/types/rpm"
-	"github.com/projectrekor/rekor/pkg/util"
+	"github.com/sigstore/rekor/pkg/log"
+	"github.com/sigstore/rekor/pkg/pki/pgp"
+	"github.com/sigstore/rekor/pkg/types"
+	"github.com/sigstore/rekor/pkg/types/rpm"
+	"github.com/sigstore/rekor/pkg/util"
 
 	"github.com/asaskevich/govalidator"
 
 	"github.com/go-openapi/strfmt"
 
-	"github.com/projectrekor/rekor/pkg/pki"
+	"github.com/sigstore/rekor/pkg/pki"
 
 	rpmutils "github.com/cavaliercoder/go-rpm"
 	"github.com/go-openapi/swag"
 	"github.com/mitchellh/mapstructure"
-	"github.com/projectrekor/rekor/pkg/generated/models"
+	"github.com/sigstore/rekor/pkg/generated/models"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -137,8 +137,7 @@ func (v *V001Entry) Unmarshal(pe models.ProposedEntry) error {
 	if err := v.RPMModel.Validate(strfmt.Default); err != nil {
 		return err
 	}
-	// cross field validation
-	return v.Validate()
+	return nil
 
 }
 
@@ -380,10 +379,6 @@ func (v V001Entry) Validate() error {
 	}
 
 	hash := pkg.Hash
-	if pkg.URL.String() != "" && hash == nil {
-		return errors.New("hash must be specified if 'url' is present for package")
-	}
-
 	if hash != nil {
 		if !govalidator.IsHash(swag.StringValue(hash.Value), swag.StringValue(hash.Algorithm)) {
 			return errors.New("invalid value for hash")

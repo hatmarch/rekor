@@ -21,11 +21,11 @@ import (
 	"io"
 	"strings"
 
-	"github.com/projectrekor/rekor/pkg/pki/minisign"
-	"github.com/projectrekor/rekor/pkg/pki/ssh"
-	"github.com/projectrekor/rekor/pkg/pki/x509"
+	"github.com/sigstore/rekor/pkg/pki/minisign"
+	"github.com/sigstore/rekor/pkg/pki/ssh"
+	"github.com/sigstore/rekor/pkg/pki/x509"
 
-	"github.com/projectrekor/rekor/pkg/pki/pgp"
+	"github.com/sigstore/rekor/pkg/pki/pgp"
 )
 
 // PublicKey Generic object representing a public key (regardless of format & algorithm)

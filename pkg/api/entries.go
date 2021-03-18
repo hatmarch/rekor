@@ -33,17 +33,17 @@ import (
 	"google.golang.org/genproto/googleapis/rpc/code"
 	"google.golang.org/grpc/codes"
 
-	"github.com/projectrekor/rekor/pkg/log"
-	"github.com/projectrekor/rekor/pkg/types"
+	"github.com/sigstore/rekor/pkg/log"
+	"github.com/sigstore/rekor/pkg/types"
 
-	"github.com/projectrekor/rekor/pkg/generated/models"
+	"github.com/sigstore/rekor/pkg/generated/models"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt"
 	tclient "github.com/google/trillian/client"
 	tcrypto "github.com/google/trillian/crypto"
-	"github.com/google/trillian/merkle/rfc6962"
-	"github.com/projectrekor/rekor/pkg/generated/restapi/operations/entries"
+	rfc6962 "github.com/google/trillian/merkle/rfc6962/hasher"
+	"github.com/sigstore/rekor/pkg/generated/restapi/operations/entries"
 )
 
 func GetLogEntryByIndexHandler(params entries.GetLogEntryByIndexParams) middleware.Responder {
@@ -131,8 +131,13 @@ func CreateLogEntryHandler(params entries.CreateLogEntryParams) middleware.Respo
 		}()
 	}
 
-	location := strfmt.URI(fmt.Sprintf("%v/%v", httpReq.URL, uuid))
-	return entries.NewCreateLogEntryCreated().WithPayload(logEntry).WithLocation(location).WithETag(uuid)
+	locationURL := httpReq.URL
+	// remove API key from output
+	query := locationURL.Query()
+	query.Del("apiKey")
+	locationURL.RawQuery = query.Encode()
+	locationURL.Path = fmt.Sprintf("%v/%v", locationURL.Path, uuid)
+	return entries.NewCreateLogEntryCreated().WithPayload(logEntry).WithLocation(strfmt.URI(locationURL.String())).WithETag(uuid)
 }
 
 func GetLogEntryByUUIDHandler(params entries.GetLogEntryByUUIDParams) middleware.Responder {
@@ -237,6 +242,9 @@ func SearchLogQueryHandler(params entries.SearchLogQueryParams) middleware.Respo
 			g.Go(func() error {
 				entry, err := types.NewEntry(e)
 				if err != nil {
+					return err
+				}
+				if err := entry.Validate(); err != nil {
 					return err
 				}
 

@@ -24,30 +24,38 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"strings"
+	"time"
 
-	"github.com/projectrekor/rekor/cmd/cli/app/state"
+	"github.com/sigstore/rekor/cmd/cli/app/state"
 
 	"github.com/google/trillian"
 	tclient "github.com/google/trillian/client"
 	tcrypto "github.com/google/trillian/crypto"
-	"github.com/google/trillian/merkle"
-	"github.com/google/trillian/merkle/rfc6962"
+	"github.com/google/trillian/merkle/logverifier"
+	rfc6962 "github.com/google/trillian/merkle/rfc6962/hasher"
 
-	"github.com/projectrekor/rekor/cmd/cli/app/format"
-	"github.com/projectrekor/rekor/pkg/generated/client/tlog"
-	"github.com/projectrekor/rekor/pkg/log"
+	"github.com/sigstore/rekor/cmd/cli/app/format"
+	"github.com/sigstore/rekor/pkg/generated/client/tlog"
+	"github.com/sigstore/rekor/pkg/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 type logInfoCmdOutput struct {
-	TreeSize int64
-	RootHash string
+	TreeSize       int64
+	RootHash       string
+	TimestampNanos uint64
 }
 
 func (l *logInfoCmdOutput) String() string {
 	// Verification is always successful if we return an object.
-	return fmt.Sprintf("Verification Successful!\nTree Size: %v\nRoot Hash: %s\n", l.TreeSize, l.RootHash)
+	ts := time.Unix(0, int64(l.TimestampNanos)).UTC().Format(time.RFC3339)
+	return fmt.Sprintf(`Verification Successful!
+Tree Size: %v
+Root Hash: %s
+Timestamp: %s
+`, l.TreeSize, l.RootHash, ts)
 }
 
 // logInfoCmd represents the current information about the transparency log
@@ -68,10 +76,6 @@ var logInfoCmd = &cobra.Command{
 		}
 
 		logInfo := result.GetPayload()
-		cmdOutput := &logInfoCmdOutput{
-			TreeSize: *logInfo.TreeSize,
-			RootHash: *logInfo.RootHash,
-		}
 
 		keyHint, err := base64.StdEncoding.DecodeString(logInfo.SignedTreeHead.KeyHint.String())
 		if err != nil {
@@ -116,6 +120,19 @@ var logInfoCmd = &cobra.Command{
 		if err != nil {
 			return nil, err
 		}
+		cmdOutput := &logInfoCmdOutput{
+			TreeSize:       *logInfo.TreeSize,
+			RootHash:       *logInfo.RootHash,
+			TimestampNanos: lr.TimestampNanos,
+		}
+
+		if lr.TreeSize != uint64(*logInfo.TreeSize) {
+			return nil, errors.New("tree size in signed tree head does not match value returned in API call")
+		}
+
+		if !strings.EqualFold(hex.EncodeToString(lr.RootHash), *logInfo.RootHash) {
+			return nil, errors.New("root hash in signed tree head does not match value returned in API call")
+		}
 
 		oldState := state.Load(serverURL)
 		if oldState != nil {
@@ -135,7 +152,7 @@ var logInfoCmd = &cobra.Command{
 					b, _ := hex.DecodeString(h)
 					hashes = append(hashes, b)
 				}
-				v := merkle.NewLogVerifier(rfc6962.DefaultHasher)
+				v := logverifier.New(rfc6962.DefaultHasher)
 				if err := v.VerifyConsistencyProof(firstSize, int64(lr.TreeSize), oldState.RootHash,
 					lr.RootHash, hashes); err != nil {
 					return nil, err

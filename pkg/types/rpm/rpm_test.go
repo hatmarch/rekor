@@ -22,8 +22,8 @@ import (
 	"testing"
 
 	"github.com/go-openapi/swag"
-	"github.com/projectrekor/rekor/pkg/generated/models"
-	"github.com/projectrekor/rekor/pkg/types"
+	"github.com/sigstore/rekor/pkg/generated/models"
+	"github.com/sigstore/rekor/pkg/types"
 )
 
 type UnmarshalTester struct {
@@ -55,6 +55,10 @@ func (u *UnmarshalTester) FetchExternalEntities(ctx context.Context) error {
 }
 
 func (u UnmarshalTester) Unmarshal(pe models.ProposedEntry) error {
+	return nil
+}
+
+func (u UnmarshalTester) Validate() error {
 	return nil
 }
 

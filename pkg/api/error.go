@@ -22,11 +22,11 @@ import (
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/mitchellh/mapstructure"
-	"github.com/projectrekor/rekor/pkg/generated/models"
-	"github.com/projectrekor/rekor/pkg/generated/restapi/operations/entries"
-	"github.com/projectrekor/rekor/pkg/generated/restapi/operations/index"
-	"github.com/projectrekor/rekor/pkg/generated/restapi/operations/tlog"
-	"github.com/projectrekor/rekor/pkg/log"
+	"github.com/sigstore/rekor/pkg/generated/models"
+	"github.com/sigstore/rekor/pkg/generated/restapi/operations/entries"
+	"github.com/sigstore/rekor/pkg/generated/restapi/operations/index"
+	"github.com/sigstore/rekor/pkg/generated/restapi/operations/tlog"
+	"github.com/sigstore/rekor/pkg/log"
 )
 
 const (
@@ -34,12 +34,13 @@ const (
 	trillianUnexpectedResult       = "Unexpected result from transparency log"
 	failedToGenerateCanonicalEntry = "Error generating canonicalized entry"
 	entryAlreadyExists             = "An equivalent entry already exists in the transparency log"
-	firstSizeLessThanLastSize      = "firstSize(%v) must be less than lastSize(%v)"
+	firstSizeLessThanLastSize      = "firstSize(%d) must be less than lastSize(%d)"
 	malformedUUID                  = "UUID must be a 64-character hexadecimal string"
 	malformedHash                  = "Hash must be a 64-character hexadecimal string created from SHA256 algorithm"
 	malformedPublicKey             = "Public key provided could not be parsed"
 	failedToGenerateCanonicalKey   = "Error generating canonicalized public key"
 	redisUnexpectedResult          = "Unexpected result from searching index"
+	lastSizeGreaterThanKnown       = "The tree size requested(%d) was greater than what is currently observable(%d)"
 )
 
 func errorMsg(message string, code int) *models.Error {

@@ -29,7 +29,7 @@ import (
 
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
-	"github.com/projectrekor/rekor/pkg/generated/models"
+	"github.com/sigstore/rekor/pkg/generated/models"
 	"go.uber.org/goleak"
 )
 
@@ -134,8 +134,9 @@ func TestCrossFieldValidation(t *testing.T) {
 					},
 				},
 			},
-			hasExtEntities:         true,
-			expectUnmarshalSuccess: false,
+			hasExtEntities:            true,
+			expectUnmarshalSuccess:    true,
+			expectCanonicalizeSuccess: true,
 		},
 		{
 			caseDesc: "public key with data & url and empty hash",
@@ -372,7 +373,14 @@ func TestCrossFieldValidation(t *testing.T) {
 			APIVersion: swag.String(tc.entry.APIVersion()),
 			Spec:       tc.entry.RPMModel,
 		}
-		if err := v.Unmarshal(&r); (err == nil) != tc.expectUnmarshalSuccess {
+
+		unmarshalAndValidate := func() error {
+			if err := v.Unmarshal(&r); err != nil {
+				return err
+			}
+			return v.Validate()
+		}
+		if err := unmarshalAndValidate(); (err == nil) != tc.expectUnmarshalSuccess {
 			t.Errorf("unexpected result in '%v': %v", tc.caseDesc, err)
 		}
 

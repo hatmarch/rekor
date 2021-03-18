@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/projectrekor/rekor/pkg/generated/models"
+	"github.com/sigstore/rekor/pkg/generated/models"
 )
 
 type TypeImpl interface {
@@ -36,6 +36,7 @@ type EntryImpl interface {
 	FetchExternalEntities(ctx context.Context) error
 	HasExternalEntities() bool
 	Unmarshal(e models.ProposedEntry) error
+	Validate() error
 }
 
 type TypeFactory func() TypeImpl
