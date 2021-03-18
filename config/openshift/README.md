@@ -72,8 +72,14 @@ ARTIFACT_URL=http://$(echo $BUCKET).s3.amazonaws.com/rekor
 Then finally upload your entry to rekor
 
 ```
-${DEMO_HOME}/rekor upload --rekor_server http://$(oc get route rekor-server -o jsonpath='{.spec.host}') --signature mysignature.asc --public-key mypublickey.key --artifact ${ARTIFACT_URL} --sha $(sha256sum rekor | awk '{ print $1 }')
+${DEMO_HOME}/bin/rekor upload --rekor_server http://$(oc get route rekor-server -n tssc-demo-rekor -o jsonpath='{.spec.host}') --signature mysignature.asc --public-key mypublickey.key --artifact ${ARTIFACT_URL} --sha $(sha256sum rekor | awk '{ print $1 }')
 
+```
+
+NOTE: no sha is needed if you're just uploading the asset directly
+
+```
+${DEMO_HOME}/bin/rekor upload --rekor_server http://$(oc get route rekor-server -n tssc-demo-rekor -o jsonpath='{.spec.host}') --signature mysignature.asc --public-key gpg_public_key --artifact ${DEMO_HOME}/bin/rekor
 ```
 
 ## Run in DevContainer
