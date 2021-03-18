@@ -27,20 +27,20 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/projectrekor/rekor/pkg/log"
-	"github.com/projectrekor/rekor/pkg/types"
-	"github.com/projectrekor/rekor/pkg/util"
+	"github.com/sigstore/rekor/pkg/log"
+	"github.com/sigstore/rekor/pkg/types"
+	"github.com/sigstore/rekor/pkg/util"
 
 	"github.com/asaskevich/govalidator"
 
 	"github.com/go-openapi/strfmt"
 
-	"github.com/projectrekor/rekor/pkg/pki"
-	"github.com/projectrekor/rekor/pkg/types/rekord"
+	"github.com/sigstore/rekor/pkg/pki"
+	"github.com/sigstore/rekor/pkg/types/rekord"
 
 	"github.com/go-openapi/swag"
 	"github.com/mitchellh/mapstructure"
-	"github.com/projectrekor/rekor/pkg/generated/models"
+	"github.com/sigstore/rekor/pkg/generated/models"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -134,7 +134,7 @@ func (v *V001Entry) Unmarshal(pe models.ProposedEntry) error {
 		return err
 	}
 	// cross field validation
-	return v.Validate()
+	return nil
 
 }
 
@@ -195,7 +195,7 @@ func (v *V001Entry) FetchExternalEntities(ctx context.Context) error {
 		defer hashW.Close()
 		defer sigW.Close()
 
-		dataReadCloser, err := util.FileOrURLReadCloser(ctx, v.RekordObj.Data.URL.String(), v.RekordObj.Data.Content, true)
+		dataReadCloser, err := util.FileOrURLReadCloser(ctx, v.RekordObj.Data.URL.String(), v.RekordObj.Data.Content, false)
 		if err != nil {
 			return closePipesOnError(err)
 		}
@@ -399,10 +399,6 @@ func (v V001Entry) Validate() error {
 	}
 
 	hash := data.Hash
-	if data.URL.String() != "" && hash == nil {
-		return errors.New("hash must be specified if 'url' is present for data")
-	}
-
 	if hash != nil {
 		if !govalidator.IsHash(swag.StringValue(hash.Value), swag.StringValue(hash.Algorithm)) {
 			return errors.New("invalid value for hash")

@@ -20,15 +20,14 @@ import (
 	"errors"
 	"fmt"
 	"math/bits"
-	"os"
 	"strconv"
 
-	"github.com/google/trillian/merkle"
-	"github.com/google/trillian/merkle/rfc6962"
-	"github.com/projectrekor/rekor/cmd/cli/app/format"
-	"github.com/projectrekor/rekor/pkg/generated/client/entries"
-	"github.com/projectrekor/rekor/pkg/generated/models"
-	"github.com/projectrekor/rekor/pkg/log"
+	"github.com/google/trillian/merkle/logverifier"
+	rfc6962 "github.com/google/trillian/merkle/rfc6962/hasher"
+	"github.com/sigstore/rekor/cmd/cli/app/format"
+	"github.com/sigstore/rekor/pkg/generated/client/entries"
+	"github.com/sigstore/rekor/pkg/generated/models"
+	"github.com/sigstore/rekor/pkg/log"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -73,16 +72,16 @@ var verifyCmd = &cobra.Command{
 	Use:   "verify",
 	Short: "Rekor verify command",
 	Long:  `Verifies an entry exists in the transparency log through an inclusion proof`,
-	PreRun: func(cmd *cobra.Command, args []string) {
+	PreRunE: func(cmd *cobra.Command, args []string) error {
 		// these are bound here so that they are not overwritten by other commands
 		if err := viper.BindPFlags(cmd.Flags()); err != nil {
-			log.Logger.Fatal("Error initializing cmd line args: ", err)
+			return fmt.Errorf("Error initializing cmd line args: %s", err)
 		}
 		if err := validateArtifactPFlags(true, true); err != nil {
-			log.Logger.Error(err)
 			_ = cmd.Help()
-			os.Exit(1)
+			return err
 		}
+		return nil
 	},
 	Run: format.WrapCmd(func(args []string) (interface{}, error) {
 		rekorClient, err := GetRekorClient(viper.GetString("rekor_server"))
@@ -167,7 +166,7 @@ var verifyCmd = &cobra.Command{
 		rootHash, _ := hex.DecodeString(*resp.Payload.RootHash)
 		leafHash, _ := hex.DecodeString(params.EntryUUID)
 
-		v := merkle.NewLogVerifier(rfc6962.DefaultHasher)
+		v := logverifier.New(rfc6962.DefaultHasher)
 		if err := v.VerifyInclusionProof(*resp.Payload.LogIndex, *resp.Payload.TreeSize,
 			hashes, rootHash, leafHash); err != nil {
 			return nil, err

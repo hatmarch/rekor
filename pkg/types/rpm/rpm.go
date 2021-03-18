@@ -19,11 +19,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/projectrekor/rekor/pkg/types"
-	"github.com/projectrekor/rekor/pkg/util"
+	"github.com/sigstore/rekor/pkg/types"
+	"github.com/sigstore/rekor/pkg/util"
 
 	"github.com/go-openapi/swag"
-	"github.com/projectrekor/rekor/pkg/generated/models"
+	"github.com/sigstore/rekor/pkg/generated/models"
 )
 
 const (

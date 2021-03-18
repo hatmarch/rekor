@@ -21,19 +21,18 @@ import (
 	"crypto/x509"
 	"encoding/hex"
 	"encoding/pem"
-	"errors"
 	"fmt"
 	"net/http"
 
-	"github.com/projectrekor/rekor/pkg/generated/models"
+	"github.com/sigstore/rekor/pkg/generated/models"
 	"google.golang.org/grpc/codes"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt"
 	tclient "github.com/google/trillian/client"
 	tcrypto "github.com/google/trillian/crypto"
-	"github.com/google/trillian/merkle/rfc6962"
-	"github.com/projectrekor/rekor/pkg/generated/restapi/operations/tlog"
+	rfc6962 "github.com/google/trillian/merkle/rfc6962/hasher"
+	"github.com/sigstore/rekor/pkg/generated/restapi/operations/tlog"
 )
 
 func GetLogInfoHandler(params tlog.GetLogInfoParams) middleware.Responder {
@@ -107,7 +106,10 @@ func GetLogProofHandler(params tlog.GetLogProofParams) middleware.Responder {
 			proofHashes = append(proofHashes, hex.EncodeToString(hash))
 		}
 	} else {
-		return handleRekorAPIError(params, http.StatusInternalServerError, errors.New("grpc call succeeded but no proof returned"), trillianUnexpectedResult)
+		// The proof field may be empty if the requested tree_size was larger than that available at the server
+		// (e.g. because there is skew between server instances, and an earlier client request was processed by
+		// a more up-to-date instance). root.TreeSize is the maximum size currently observed
+		return handleRekorAPIError(params, http.StatusBadRequest, nil, fmt.Sprintf(lastSizeGreaterThanKnown, params.LastSize, root.TreeSize))
 	}
 
 	consistencyProof := models.ConsistencyProof{

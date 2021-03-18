@@ -22,8 +22,8 @@ import (
 	"testing"
 
 	"github.com/go-openapi/swag"
-	"github.com/projectrekor/rekor/pkg/generated/models"
-	"github.com/projectrekor/rekor/pkg/types"
+	"github.com/sigstore/rekor/pkg/generated/models"
+	"github.com/sigstore/rekor/pkg/types"
 )
 
 type UnmarshalTester struct {
@@ -32,6 +32,10 @@ type UnmarshalTester struct {
 
 func (u UnmarshalTester) NewEntry() types.EntryImpl {
 	return &UnmarshalTester{}
+}
+
+func (u UnmarshalTester) Validate() error {
+	return nil
 }
 
 func (u UnmarshalTester) APIVersion() string {

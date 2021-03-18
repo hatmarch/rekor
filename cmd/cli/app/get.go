@@ -16,31 +16,36 @@ limitations under the License.
 package app
 
 import (
-	"encoding/json"
+	"bytes"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"strconv"
 	"time"
 
-	"github.com/projectrekor/rekor/cmd/cli/app/format"
-	"github.com/projectrekor/rekor/pkg/generated/client/entries"
-	"github.com/projectrekor/rekor/pkg/generated/models"
-	"github.com/projectrekor/rekor/pkg/log"
+	"github.com/go-openapi/runtime"
+	"github.com/sigstore/rekor/cmd/cli/app/format"
+	"github.com/sigstore/rekor/pkg/generated/client/entries"
+	"github.com/sigstore/rekor/pkg/generated/models"
+	"github.com/sigstore/rekor/pkg/log"
+	"github.com/sigstore/rekor/pkg/types"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 type getCmdOutput struct {
-	Body           []byte
+	Body           interface{}
 	LogIndex       int
 	IntegratedTime int64
+	UUID           string
 }
 
 func (g *getCmdOutput) String() string {
 	s := fmt.Sprintf("Index: %d\n", g.LogIndex)
 	dt := time.Unix(g.IntegratedTime, 0).UTC().Format(time.RFC3339)
 	s += fmt.Sprintf("IntegratedTime: %s\n", dt)
+	s += fmt.Sprintf("UUID: %s\n", g.UUID)
 	s += fmt.Sprintf("Body: %s\n", g.Body)
 	return s
 }
@@ -75,8 +80,8 @@ var getCmd = &cobra.Command{
 			if err != nil {
 				return nil, err
 			}
-			for _, entry := range resp.Payload {
-				return parseEntry(entry)
+			for ix, entry := range resp.Payload {
+				return parseEntry(ix, entry)
 			}
 		}
 
@@ -94,7 +99,7 @@ var getCmd = &cobra.Command{
 				if k != uuid {
 					continue
 				}
-				return parseEntry(entry)
+				return parseEntry(k, entry)
 			}
 		}
 
@@ -102,17 +107,27 @@ var getCmd = &cobra.Command{
 	}),
 }
 
-func parseEntry(e models.LogEntryAnon) (interface{}, error) {
-	bytes, err := e.MarshalBinary()
+func parseEntry(uuid string, e models.LogEntryAnon) (interface{}, error) {
+	b, err := base64.StdEncoding.DecodeString(e.Body.(string))
 	if err != nil {
 		return nil, err
 	}
-	// Now parse that back into JSON in the format "body, logindex"
-	obj := getCmdOutput{}
-	if err := json.Unmarshal(bytes, &obj); err != nil {
+
+	pe, err := models.UnmarshalProposedEntry(bytes.NewReader(b), runtime.JSONConsumer())
+	if err != nil {
 		return nil, err
 	}
-	obj.IntegratedTime = e.IntegratedTime
+	eimpl, err := types.NewEntry(pe)
+	if err != nil {
+		return nil, err
+	}
+
+	obj := getCmdOutput{
+		Body:           eimpl,
+		UUID:           uuid,
+		IntegratedTime: e.IntegratedTime,
+		LogIndex:       int(*e.LogIndex),
+	}
 
 	return &obj, nil
 }

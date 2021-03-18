@@ -27,9 +27,9 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
-	"github.com/projectrekor/rekor/pkg/generated/client/entries"
-	"github.com/projectrekor/rekor/pkg/generated/client/index"
-	"github.com/projectrekor/rekor/pkg/generated/client/tlog"
+	"github.com/sigstore/rekor/pkg/generated/client/entries"
+	"github.com/sigstore/rekor/pkg/generated/client/index"
+	"github.com/sigstore/rekor/pkg/generated/client/tlog"
 )
 
 // Default rekor HTTP client.

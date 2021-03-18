@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/projectrekor/rekor/pkg/pki/ssh"
+	"github.com/sigstore/rekor/pkg/pki/ssh"
 )
 
 var (
