@@ -6,4 +6,6 @@ rekor-cli
 rekor-server
 /server
 swagger
-pkg/generated/
+
+# don't ignore the generated directory
+# pkg/generated/
