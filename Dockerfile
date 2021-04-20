@@ -43,3 +43,7 @@ RUN go get github.com/go-delve/delve/cmd/dlv
 
 # overwrite server and include debugger
 COPY --from=builder /opt/app-root/src/rekor-server_debug /usr/local/bin/rekor-server
+RUN mkdir -p /opt/app-root/src && chown -R 0:0 /opt/app-root && chmod -R 775 /opt/app-root
+COPY --from=builder --chown=0:0 --chmod=775 /opt/app-root/src/ /opt/app-root/src
+#RUN chmod -R g+w /opt/app-root/ && chmod -R g+w /go
+ENV HOME=/opt/app-root
