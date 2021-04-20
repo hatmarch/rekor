@@ -1,3 +1,18 @@
+#
+# Copyright 2021 The Sigstore Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 swagger: "2.0"
 info:
   title: Rekor
@@ -41,6 +56,7 @@ paths:
           $ref: '#/responses/BadContent'
         default:
           $ref: '#/responses/InternalServerError'
+
   /api/v1/log:
     get:
       summary: Get information about the current state of the transparency log
@@ -62,7 +78,7 @@ paths:
       description: Returns the public key that can be used to validate the signed tree head
       operationId: getPublicKey
       tags:
-        - tlog
+        - pubkey
       produces:
         - application/x-pem-file
       responses:
@@ -140,7 +156,7 @@ paths:
         default:
           $ref: '#/responses/InternalServerError'
     get:
-      summary: Retrieves an entry from the transparency log (if it exists) by index
+      summary: Retrieves an entry and inclusion proof from the transparency log (if it exists) by index
       operationId: getLogEntryByIndex
       tags:
         - entries
@@ -153,7 +169,7 @@ paths:
           description: specifies the index of the entry in the transparency log to be retrieved
       responses:
         200:
-          description: the entry in the transparency log requested
+          description: the entry in the transparency log requested along with an inclusion proof
           schema:
             $ref: '#/definitions/LogEntry'
         404:
@@ -163,32 +179,9 @@ paths:
 
   /api/v1/log/entries/{entryUUID}:
     get:
-      summary: Retrieves an entry from the transparency log (if it exists) by UUID
+      summary: Get log entry and information required to generate an inclusion proof for the entry in the transparency log
+      description: Returns the entry, root hash, tree size, and a list of hashes that can be used to calculate proof of an entry being included in the transparency log
       operationId: getLogEntryByUUID
-      tags:
-        - entries
-      parameters:
-        - in: path
-          name: entryUUID
-          type: string
-          required: true
-          pattern: '^[0-9a-fA-F]{64}$'
-          description: the UUID of the entry to be retrieved from the log. The UUID is also the merkle tree hash of the entry.
-      responses:
-        200:
-          description: the entry in the transparency log requested
-          schema:
-            $ref: '#/definitions/LogEntry'
-        404:
-          $ref: '#/responses/NotFound'
-        default:
-          $ref: '#/responses/InternalServerError'
-
-  /api/v1/log/entries/{entryUUID}/proof:
-    get:
-      summary: Get information required to generate an inclusion proof for a specified entry in the transparency log
-      description: Returns root hash, tree size, and a list of hashes that can be used to calculate proof of an entry being included in the transparency log
-      operationId: getLogEntryProof
       tags:
         - entries
       parameters:
@@ -202,7 +195,7 @@ paths:
         200:
           description: Information needed for a client to compute the inclusion proof
           schema:
-            $ref: '#/definitions/InclusionProof'
+            $ref: '#/definitions/LogEntry'
         404:
           $ref: '#/responses/NotFound'
         default:
@@ -276,6 +269,23 @@ definitions:
         - spec
       additionalProperties: false
 
+  jar:
+    type: object
+    description: Java Archive (JAR)
+    allOf:
+    - $ref: '#/definitions/ProposedEntry'
+    - properties:
+        apiVersion:
+          type: string
+          pattern: ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+        spec:
+          type: object
+          $ref: 'pkg/types/jar/jar_schema.json'
+      required:
+        - apiVersion
+        - spec
+      additionalProperties: false
+
   LogEntry:
     type: object
     additionalProperties:
@@ -289,7 +299,10 @@ definitions:
           additionalProperties: true
         integratedTime:
           type: integer
+        inclusionProof:
+          $ref: '#/definitions/InclusionProof'
       required:
+        - "logIndex"
         - "body"
 
   SearchIndex:

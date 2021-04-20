@@ -1,3 +1,18 @@
+#
+# Copyright 2021 The Sigstore Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,7 +35,7 @@ spec:
     spec:
       containers:
       - name: rekor-server
-        image: ko://github.com/sigstore/rekor/cmd/server
+        image: ko://github.com/sigstore/rekor/cmd/rekor-server
         ports:
         - containerPort: 3000
         - containerPort: 2112 # metrics
@@ -33,7 +48,14 @@ spec:
           "--redis_server.port=6379",
           "--trillian_log_server.tlog_id=3904496407287907110",
           "--log_type=prod",
+          "--rekor_server.signer=$(KMS)",
         ]
+        env:
+        - name: KMS
+          valueFrom:
+            configMapKeyRef:
+              name: rekor-config
+              key: kms
         resources:
           requests:
             memory: "1G"
