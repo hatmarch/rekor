@@ -324,6 +324,9 @@ func CreateRekordFromPFlags() (models.ProposedEntry, error) {
 				return nil, fmt.Errorf("error reading artifact file: %w", err)
 			}
 			re.RekordObj.Data.Content = strfmt.Base64(artifactBytes)
+
+			// Local hack to get canonicalize to work correctly for extradata nodes
+			re.RekordObj.ExtraData = strfmt.Base64(artifactBytes)
 		}
 
 		re.RekordObj.Signature = &models.RekordV001SchemaSignature{}
